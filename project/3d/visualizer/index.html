@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickHull 3D Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+    <script src="https://cdn.babylonjs.com/babylon.max.js"></script>
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h1>3D Hull</h1>
+                <p class="subtitle">Convex Hull Visualizer</p>
+            </div>
+            
+            <div class="sidebar-content">
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="section-icon">📁</span> Load Dataset</h3>
+                </div>
+                <div class="input-group">
+                    <label for="fileInput">Upload File</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="fileInput" accept=".txt" />
+                        <button id="loadFile" class="btn-primary">📂 Load</button>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="section-icon">📊</span> Sample Datasets</h3>
+                </div>
+                <div class="button-grid">
+                    <button id="loadSample1" class="btn-sample">Cube</button>
+                    <button id="loadSample2" class="btn-sample">Tetrahedron</button>
+                    <button id="loadSample3" class="btn-sample">Octahedron</button>
+                    <button id="loadSample4" class="btn-sample">Icosahedron</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="section-icon">🎨</span> Examples</h3>
+                </div>
+                <div class="button-grid">
+                    <button id="theme" class="btn-example">🎭 Theme</button>
+                    <button id="rndExample" class="btn-example">🎲 Random</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="section-icon">⚙️</span> Compute</h3>
+                </div>
+                <div class="input-group">
+                    <label for="algorithmSelect">Algorithm</label>
+                    <select id="algorithmSelect" class="algorithm-select">
+                        <option value="quickhull">QuickHull ✓</option>
+                        <option value="incremental">Incremental ✓</option>
+                        <option value="jarvis">Jarvis March ✓</option>
+                        <option value="compare">🔬 Compare All 3</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="animSpeedSlider">Animation Speed: <span id="animSpeedValue">3.0x</span></label>
+                    <input type="range" id="animSpeedSlider" min="0.5" max="10" step="0.5" value="3.0" style="width: 100%;">
+                </div>
+                <div class="button-grid">
+                    <button id="runQuickhull" class="btn-compute">▶️ Run Algorithm</button>
+                    <button id="showQuickhull" class="btn-animate">🎬 Animate</button>
+                </div>
+                <div id="algorithmStats" class="algorithm-stats" style="display: none; margin-top: 12px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 12px;">
+                    <div class="stats-header" style="font-weight: 600; margin-bottom: 8px; color: var(--accent-primary);">📊 Algorithm Statistics</div>
+                    <div id="statsContent" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; color: var(--text-secondary);"></div>
+                </div>
+            </div>
+            
+            <div class="section" style="margin-top: auto; padding-top: 20px;">
+                <div style="display: flex; justify-content: center;">
+                    <button id="clearScene" class="btn-clear">🗑️ Clear</button>
+                </div>
+            </div>
+            </div>
+            
+            <div id="statusBar" class="status-bar">
+                <div class="status-indicator"></div>
+                <span id="statusText">Ready. Load points to begin.</span>
+            </div>
+        </div>
+        
+        <div id="resizeHandle" class="resize-handle"></div>
+        
+        <div id="canvasContainer">
+            <canvas id="renderCanvas" touch-action="none"></canvas>
+            <div id="instructions" class="instructions">
+                <div class="instructions-header">
+                    <strong>Controls</strong>
+                </div>
+                <ul class="instructions-list">
+                    <li>
+                        <span class="instructions-icon">🖱️</span>
+                        <span>Left Click + Drag: Rotate</span>
+                    </li>
+                    <li>
+                        <span class="instructions-icon">🔍</span>
+                        <span>Mouse Wheel: Zoom</span>
+                    </li>
+                    <li>
+                        <span class="instructions-icon">🖱️</span>
+                        <span>Right Click + Drag: Pan</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="index.js" type="module"></script>
+</body>
+</html>

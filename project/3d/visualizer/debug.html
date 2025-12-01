@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal QuickHull Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+    <script src="https://cdn.babylonjs.com/babylon.max.js"></script>
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h1>3D Hull</h1>
+                <p class="subtitle">Minimal Test</p>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="section">
+                    <div class="section-header">
+                        <h3>Status</h3>
+                    </div>
+                    <div id="status">Initializing...</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h3>Test Buttons</h3>
+                    </div>
+                    <button id="testButton" class="btn-primary">Test QuickHull</button>
+                    <button id="clearButton" class="btn-primary">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainContent">
+            <canvas id="renderCanvas" touch-action="none"></canvas>
+        </div>
+    </div>
+
+    <script type="module">
+        let scene = null;
+        let engine = null;
+
+        // Simple axis display
+        function showWorldAxis(size, scene) {
+            var axisX = BABYLON.Mesh.CreateLines("axisX", [
+                BABYLON.Vector3.Zero(),
+                new BABYLON.Vector3(size, 0, 0)
+            ], scene);
+            axisX.color = new BABYLON.Color3(1, 0, 0);
+
+            var axisY = BABYLON.Mesh.CreateLines("axisY", [
+                BABYLON.Vector3.Zero(),
+                new BABYLON.Vector3(0, size, 0)
+            ], scene);
+            axisY.color = new BABYLON.Color3(0, 1, 0);
+
+            var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+                BABYLON.Vector3.Zero(),
+                new BABYLON.Vector3(0, 0, size)
+            ], scene);
+            axisZ.color = new BABYLON.Color3(0, 0, 1);
+        }
+
+        function createScene(engine, canvas) {
+            var scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0.1, 0.1, 0.15);
+
+            var camera = new BABYLON.ArcRotateCamera(
+                "camera1",
+                1.3*Math.PI/2,
+                1.2*Math.PI/4,
+                50,
+                new BABYLON.Vector3(0,0,0),
+                scene
+            );
+            camera.setTarget(BABYLON.Vector3.Zero());
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 200;
+            camera.attachControl(canvas, true);
+
+            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
+            light.intensity = 0.7;
+
+            return scene;
+        }
+
+        async function init() {
+            try {
+                console.log("Initializing minimal visualizer...");
+
+                const canvas = document.getElementById("renderCanvas");
+                if (!canvas) {
+                    throw new Error("Canvas element not found");
+                }
+
+                engine = new BABYLON.Engine(canvas, true);
+                scene = createScene(engine, canvas);
+                showWorldAxis(5, scene);
+
+                document.getElementById("status").textContent = "✓ Initialized successfully!";
+
+                engine.runRenderLoop(function () {
+                    scene.render();
+                });
+
+                window.addEventListener("resize", function () {
+                    engine.resize();
+                });
+
+                console.log("Initialization complete");
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                document.getElementById("status").textContent = "✗ Error: " + error.message;
+            }
+        }
+
+        // Test button functionality
+        document.getElementById("testButton").addEventListener("click", async function() {
+            try {
+                console.log("Testing QuickHull...");
+
+                // Import the QuickHull module
+                const { Quickhull3D } = await import('./Quickhull3D.js');
+
+                // Create some test points
+                const points = [
+                    new BABYLON.Vector3(1, 1, 1),
+                    new BABYLON.Vector3(-1, 1, 1),
+                    new BABYLON.Vector3(1, -1, 1),
+                    new BABYLON.Vector3(-1, -1, 1),
+                    new BABYLON.Vector3(1, 1, -1),
+                    new BABYLON.Vector3(-1, 1, -1),
+                    new BABYLON.Vector3(1, -1, -1),
+                    new BABYLON.Vector3(-1, -1, -1),
+                    new BABYLON.Vector3(0, 0, 2)
+                ];
+
+                console.log("Created test points:", points.length);
+
+                // Create and build hull
+                const hull = new Quickhull3D();
+                const success = hull.build(points);
+
+                if (success) {
+                    console.log("Hull built successfully");
+                    document.getElementById("status").textContent = "✓ QuickHull test successful!";
+
+                    // Create mesh from hull faces
+                    if (hull.faces && hull.faces.length > 0) {
+                        const positions = [];
+                        const indices = [];
+
+                        hull.faces.forEach((face, faceIndex) => {
+                            if (face.points && face.points.length >= 3) {
+                                const p0 = face.points[0];
+                                const p1 = face.points[1];
+                                const p2 = face.points[2];
+
+                                if (p0 && p1 && p2) {
+                                    positions.push(p0.x, p0.y, p0.z);
+                                    positions.push(p1.x, p1.y, p1.z);
+                                    positions.push(p2.x, p2.y, p2.z);
+
+                                    indices.push(faceIndex * 3, faceIndex * 3 + 1, faceIndex * 3 + 2);
+                                }
+                            }
+                        });
+
+                        if (positions.length > 0) {
+                            const hullMesh = new BABYLON.Mesh("hull", scene);
+                            const vertexData = new BABYLON.VertexData();
+                            vertexData.positions = positions;
+                            vertexData.indices = indices;
+                            vertexData.applyToMesh(hullMesh);
+
+                            const material = new BABYLON.StandardMaterial("hullMat", scene);
+                            material.diffuseColor = new BABYLON.Color3(0, 1, 0);
+                            material.alpha = 0.5;
+                            material.backFaceCulling = false;
+                            hullMesh.material = material;
+
+                            console.log("Hull mesh created");
+                        }
+                    }
+                } else {
+                    throw new Error("Hull build failed");
+                }
+
+            } catch (error) {
+                console.error("QuickHull test error:", error);
+                document.getElementById("status").textContent = "✗ Test failed: " + error.message;
+            }
+        });
+
+        document.getElementById("clearButton").addEventListener("click", function() {
+            // Clear all meshes except camera and lights
+            scene.meshes.forEach(mesh => {
+                if (mesh.name !== "axisX" && mesh.name !== "axisY" && mesh.name !== "axisZ") {
+                    mesh.dispose();
+                }
+            });
+            document.getElementById("status").textContent = "✓ Scene cleared";
+        });
+
+        // Initialize when page loads
+        window.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+</html>

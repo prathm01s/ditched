@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-19T18:35:40.496422",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.12.3",
+    "numpy_version": "1.26.4",
+    "total_results": 6
+  },
+  "results": [
+    {
+      "algorithm": "quickhull",
+      "input_size": 50,
+      "time_ms": 37.65479999128729,
+      "memory_mb": 0.0665435791015625,
+      "iterations": 28,
+      "comparisons": 883,
+      "faces": 19,
+      "vertices": 17,
+      "trial": 1,
+      "success": true
+    },
+    {
+      "algorithm": "jarvis",
+      "input_size": 50,
+      "time_ms": 13596.509099996183,
+      "memory_mb": 0.0951385498046875,
+      "iterations": 91,
+      "comparisons": 697624,
+      "faces": 67,
+      "vertices": 28,
+      "trial": 1,
+      "success": true
+    },
+    {
+      "algorithm": "incremental",
+      "input_size": 50,
+      "time_ms": 31.355899991467595,
+      "memory_mb": 0.1911773681640625,
+      "iterations": 30,
+      "comparisons": 1214,
+      "faces": 42,
+      "vertices": 23,
+      "trial": 1,
+      "success": true
+    },
+    {
+      "algorithm": "quickhull",
+      "input_size": 100,
+      "time_ms": 120.42989995097741,
+      "memory_mb": 0.0945281982421875,
+      "iterations": 38,
+      "comparisons": 1839,
+      "faces": 23,
+      "vertices": 22,
+      "trial": 1,
+      "success": true
+    },
+    {
+      "algorithm": "jarvis",
+      "input_size": 100,
+      "time_ms": 48717.8041000152,
+      "memory_mb": 0.1532135009765625,
+      "iterations": 128,
+      "comparisons": 2478109,
+      "faces": 90,
+      "vertices": 41,
+      "trial": 1,
+      "success": true
+    },
+    {
+      "algorithm": "incremental",
+      "input_size": 100,
+      "time_ms": 89.29259999422356,
+      "memory_mb": 0.3286285400390625,
+      "iterations": 43,
+      "comparisons": 4048,
+      "faces": 60,
+      "vertices": 32,
+      "trial": 1,
+      "success": true
+    }
+  ]
+}
